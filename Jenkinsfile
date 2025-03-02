@@ -46,11 +46,10 @@ pipeline {
                                 transfers: [
                                     [
                                         sourceFiles: '**/*',
-                                        removePrefix: '/heplingshand.in/htdocs/',
-                                        remoteDirectory: '/heplingshand.in/htdocs/',  // ✅ Correct FTP target directory
-                                          // ✅ Remove extra directory
+                                        remoteDirectory: '/heplingshand.in/htdocs/',  // ✅ Correct FTP path
+                                        removePrefix: 'heplingshand.in', // ✅ Only remove the project folder
                                         flatten: false,
-                                        cleanRemote: true // ✅ Ensure files are overwritten
+                                        cleanRemote: true // ✅ Overwrite existing files
                                     ]
                                 ],
                                 useWorkspaceInPromotion: false,
