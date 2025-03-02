@@ -42,13 +42,14 @@ pipeline {
                     ftpPublisher(
                         publishers: [
                             [
-                                configName: "helpinghands",  // ✅ Must match Jenkins FTP server config
+                                configName: "helpinghands",
                                 transfers: [
                                     [
-                                        sourceFiles: '**/*', // ✅ Upload all files
-                                        remoteDirectory: '', // ✅ Target directory on FTP
+                                        sourceFiles: '**/*',
+                                        remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Corrected path
                                         removePrefix: '',
-                                        flatten: false
+                                        flatten: false,
+                                        cleanRemote: true // ✅ Ensure old files are removed before upload
                                     ]
                                 ],
                                 useWorkspaceInPromotion: false,
