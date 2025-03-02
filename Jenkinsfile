@@ -51,6 +51,7 @@ pipeline {
                                         flatten: false
                                     ]
                                 ],
+                                cleanRemote: false, // ✅ Prevents deleting existing files
                                 useWorkspaceInPromotion: false,
                                 usePromotionTimestamp: false
                             ]
