@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Encryptor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .drop-zone {
+            width: 100%;
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 20px;
+            border: 2px dashed #4CAF50;
+            border-radius: 10px;
+            background-color: #f9f9f9;
+            cursor: pointer;
+        }
+
+        .drop-zone.dragover {
+            background-color: #e0ffe0;
+        }
+
+        .message {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .download-link {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>File Encryptor</h1>
+    <div id="dropZone" class="drop-zone">
+        <p class="message">Drag and drop a file here, or click to select a file.</p>
+        <input type="file" id="fileInput" class="hidden" />
+    </div>
+    <div id="result" class="hidden">
+        <h3>File encrypted successfully!</h3>
+        <a id="downloadLink" class="download-link" href="#" download>Download Encrypted File</a>
+    </div>
+    <button id="backButton" class="back-button">Back to Home</button>
+    <script>
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileInput');
+        const result = document.getElementById('result');
+        const downloadLink = document.getElementById('downloadLink');
+
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                uploadFile(file);
+            }
+        });
+
+        fileInput.addEventListener('change', () => {
+            const file = fileInput.files[0];
+            if (file) {
+                uploadFile(file);
+            }
+        });
+
+        function uploadFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('encrypt.php', {
+                method: 'POST',
+                body: formData,
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.success) {
+                        result.classList.remove('hidden');
+                        downloadLink.href = data.filePath;
+                        downloadLink.download = data.fileName;
+                    } else {
+                        alert('Error encrypting the file.');
+                    }
+                })
+                .catch(() => alert('Failed to upload the file.'));
+        }
+        backButton.addEventListener('click', () => {
+            // Dynamically get the root domain from the server
+            window.location.href = `${window.location.protocol}//${window.location.hostname}`;
+        });
+    </script>
+    <style>
+        .back-button {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #4f46e5;
+            /* Indigo color */
+            color: #ffffff;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 8px;
+            text-decoration: none;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .back-button:hover {
+            background-color: #4338ca;
+            /* Slightly darker indigo for hover */
+            transform: translateY(-2px);
+            /* Slight "lift" on hover */
+        }
+
+        .back-button:active {
+            transform: translateY(0);
+            /* Reset position on click */
+            background-color: #3730a3;
+            /* Even darker indigo on click */
+        }
+    </style>
+</body>
+
+</html>

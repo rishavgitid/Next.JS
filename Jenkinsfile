@@ -1,31 +1,50 @@
 pipeline {
     agent any
 
+    environment {
+        GIT_REPO = 'https://github.com/rishavgitid/Next.JS'
+    }
+
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/rishavgitid/Next.JS'
+                script {
+                    def branch = env.GIT_BRANCH ?: 'main'
+                    echo "Branch detected: ${branch}"
+
+                    git branch: branch, url: env.GIT_REPO
+                }
             }
         }
 
-        stage('Build') {
+        stage('Deploy via FTP') {
             steps {
-                echo 'Building the application...'
-                // Add build commands (e.g., Maven, Gradle, npm, etc.)
-            }
-        }
+                script {
+                    def ftpSettings = [:]
 
-        stage('Test') {
-            steps {
-                echo 'Running tests...'
-                // Add test commands (e.g., unit tests)
-            }
-        }
+                    if (env.GIT_BRANCH == 'staging') {
+                        echo 'Deploying to Development Server...'
+                        ftpSettings = [
+                            site: 'dev-server',
+                            sourceFiles: '**/*',
+                            remoteDirectory: '/var/www/dev-project/',
+                            flatten: true
+                        ]
+                    } else if (env.GIT_BRANCH == 'main') {
+                        echo 'Deploying to Production Server...'
+                        ftpSettings = [
+                            site: 'helpinghands',
+                            sourceFiles: '**/*',
+                            remoteDirectory: '/heplingshand.in/htdocs',
+                            flatten: true
+                        ]
+                    } else {
+                        echo "Branch ${env.GIT_BRANCH} is not configured for deployment."
+                        return
+                    }
 
-        stage('Deploy') {
-            steps {
-                echo 'Deploying application...'
-                // Add deployment commands (e.g., Docker, SCP, Kubernetes)
+                    publishOverFtp(ftpSettings)
+                }
             }
         }
     }
