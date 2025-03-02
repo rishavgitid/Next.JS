@@ -1,24 +1,46 @@
-stage('Deploy') {
-    when {
-        branch 'staging'
-        branch 'main'
-    }
-    steps {
-        script {
-            def server = env.BRANCH_NAME == 'staging' ? DEV_FTP : PROD_FTP
-            echo "Deploying to ${server}..."
+pipeline {
+    agent any
 
-            step([
-                $class: 'PublishOverFtp',
-                parameterName: '',
-                sites: [[
-                    name: server,
-                    sourceFiles: '**/*',
-                    remoteDirectory: '/heplingshand.in/htdocs/',
-                    removePrefix: '',
-                    flatten: false
-                ]]
-            ])
+    stages {
+        stage('Clone Repository') {
+            steps {
+                git branch: 'main', url: 'https://github.com/rishavgitid/Next.JS'
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the application...'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
+            }
+        }
+
+        stage('Deploy') {
+            steps {
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "Deploying to FTP server..."
+                        step([
+                            $class: 'PublishOverFtp',
+                            parameterName: '',
+                            sites: [[
+                                name: "helpinghands",         // ✅ Use the exact name configured in Jenkins
+                                sourceFiles: '**/*',        // ✅ Upload all files
+                                remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Target directory on the server
+                                removePrefix: '',           // ✅ No prefix removal
+                                flatten: false              // ✅ Maintain directory structure
+                            ]]
+                        ])
+                    } else {
+                        echo "Skipping deployment for branch ${env.BRANCH_NAME}"
+                    }
+                }
+            }
         }
     }
 }
