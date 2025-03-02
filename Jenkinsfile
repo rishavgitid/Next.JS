@@ -11,7 +11,13 @@ pipeline {
         stage('Get Branch Name') {
             steps {
                 script {
-                    env.BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                    env.BRANCH_NAME = sh(script: '''
+                        if [ -d .git ]; then
+                            git symbolic-ref --short HEAD || git branch --show-current
+                        else
+                            echo "main"  # Default fallback
+                        fi
+                    ''', returnStdout: true).trim()
                     echo "Current branch: ${env.BRANCH_NAME}"
                 }
             }
@@ -31,7 +37,7 @@ pipeline {
 
         stage('Deploy') {
             when {
-                expression { env.BRANCH_NAME == 'main' }  // ✅ Deploy only if branch is 'main'
+                expression { return env.BRANCH_NAME == 'main' }  // ✅ Ensure the condition is checked properly
             }
             steps {
                 script {
@@ -40,8 +46,8 @@ pipeline {
                         $class: 'PublishOverFtp',
                         parameterName: '',
                         sites: [[
-                            name: "helpinghands", // ✅ Must match the configured name in Jenkins
-                            sourceFiles: '**/*', // ✅ Upload all files
+                            name: "helpinghands",  // ✅ Must match the configured name in Jenkins
+                            sourceFiles: '**/*',  // ✅ Upload all files
                             remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Correct FTP path
                             removePrefix: '',
                             flatten: false
