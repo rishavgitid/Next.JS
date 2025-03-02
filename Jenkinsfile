@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                checkout scm  // ✅ Best practice for checking out repo
+                checkout scm
             }
         }
 
@@ -15,7 +15,7 @@ pipeline {
                         if [ -d .git ]; then
                             git symbolic-ref --short HEAD || git branch --show-current
                         else
-                            echo "main"  # Default fallback
+                            echo "main"
                         fi
                     ''', returnStdout: true).trim()
                     echo "Current branch: ${env.BRANCH_NAME}"
@@ -36,20 +36,29 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+                expression { return env.BRANCH_NAME == 'main' }  
+            }
             steps {
                 script {
                     echo "Deploying to FTP server..."
-                    step([
-                        $class: 'PublishOverFtp',
-                        parameterName: '',
-                        sites: [[
-                            name: "helpinghands",  // ✅ Must match the configured name in Jenkins
-                            sourceFiles: '**/*',  // ✅ Upload all files
-                            remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Correct FTP path
-                            removePrefix: '',
-                            flatten: false
-                        ]]
-                    ])
+                    ftpPublisher(
+                        publishers: [
+                            [
+                                configName: "helpinghands",  // ✅ Must match Jenkins FTP server config
+                                transfers: [
+                                    [
+                                        sourceFiles: '**/*', // ✅ Upload all files
+                                        remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Target directory on FTP
+                                        removePrefix: '',
+                                        flatten: false
+                                    ]
+                                ],
+                                useWorkspaceInPromotion: false,
+                                usePromotionTimestamp: false
+                            ]
+                        ]
+                    )
                 }
             }
         }
