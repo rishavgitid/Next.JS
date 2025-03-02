@@ -7,7 +7,6 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/rishavgitid/Next.JS'
             }
         }
-
         stage('Build') {
             steps {
                 echo 'Building the application...'
