@@ -69,7 +69,7 @@
                 <!-- Navigation links -->
                 <ul id="mobileMenu" class="hidden fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-20 transform -translate-x-full transition-transform duration-300 md:hidden">
                     <li class="p-4 border-b">
-                        <a href="#about" class="block hover:text-indigo-600">About Us not</a>
+                        <a href="#about" class="block hover:text-indigo-600">About Us </a>
                     </li>
                     <li class="p-4 border-b">
                         <a href="#services" class="block hover:text-indigo-600">Services</a>
@@ -135,7 +135,7 @@
     <!-- About Us Section -->
     <section id="about" class="py-16 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 fade-in">
-            <h2 class="text-3xl font-bold text-center text-indigo-600">About Us</h2>
+            <h2 class="text-3xl font-bold text-center text-indigo-600">About Us Comapny</h2>
             <p class="mt-6 text-gray-700 text-center text-lg">Helping Hands is a platform dedicated to supporting the less fortunate, fostering community growth, and enabling education for everyone. Founded by Rishav Kumar, we strive to create a world where no one is left behind.</p>
         </div>
     </section>
