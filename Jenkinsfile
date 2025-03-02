@@ -1,24 +1,47 @@
 pipeline {
     agent any
 
-    environment {
-        BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
-    }
-
     stages {
-        stage('Check Branch') {
+        stage('Clone Repository') {
             steps {
-                echo "Current branch: ${BRANCH_NAME}"
+                git branch: 'main', url: 'https://github.com/rishavgitid/Next.JS'
+             BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+
+            }
+        }
+
+        stage('Build') {
+            steps {
+                echo 'Building the application...'
+            }
+        }
+
+        stage('Test') {
+            steps {
+                echo 'Running tests...'
             }
         }
 
         stage('Deploy') {
-            when {
-                expression { BRANCH_NAME == 'main' }
-            }
             steps {
-                echo 'Deploying to FTP...'
-                // FTP deployment steps here
+                script {
+                    if (env.BRANCH_NAME == 'main') {
+                        echo "Deploying to FTP server..."
+                        step([
+                            $class: 'PublishOverFtp',
+                            parameterName: '',
+                            sites: [[
+                                name: "helpinghands",         // ✅ Use the exact name configured in Jenkins
+                                sourceFiles: '**/*',        // ✅ Upload all files
+                                remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Target directory on the server
+                                removePrefix: '',           // ✅ No prefix removal
+                                flatten: false              // ✅ Maintain directory structure
+                            ]]
+                        ])
+                    } else {
+                        echo "Skipping deployment for branch ${env.BRANCH_NAME}"
+                    }
+                }
             }
         }
     }
