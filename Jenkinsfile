@@ -36,9 +36,6 @@ pipeline {
         }
 
         stage('Deploy') {
-            when {
-                expression { return env.BRANCH_NAME == 'main' }  // ✅ Ensure the condition is checked properly
-            }
             steps {
                 script {
                     echo "Deploying to FTP server..."
