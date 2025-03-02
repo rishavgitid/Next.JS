@@ -4,9 +4,16 @@ pipeline {
     stages {
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/rishavgitid/Next.JS'
-             BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                checkout scm  // ✅ Best practice for checking out repo
+            }
+        }
 
+        stage('Get Branch Name') {
+            steps {
+                script {
+                    env.BRANCH_NAME = sh(script: 'git rev-parse --abbrev-ref HEAD', returnStdout: true).trim()
+                    echo "Current branch: ${env.BRANCH_NAME}"
+                }
             }
         }
 
@@ -23,24 +30,23 @@ pipeline {
         }
 
         stage('Deploy') {
+            when {
+                expression { env.BRANCH_NAME == 'main' }  // ✅ Deploy only if branch is 'main'
+            }
             steps {
                 script {
-                    if (env.BRANCH_NAME == 'main') {
-                        echo "Deploying to FTP server..."
-                        step([
-                            $class: 'PublishOverFtp',
-                            parameterName: '',
-                            sites: [[
-                                name: "helpinghands",         // ✅ Use the exact name configured in Jenkins
-                                sourceFiles: '**/*',        // ✅ Upload all files
-                                remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Target directory on the server
-                                removePrefix: '',           // ✅ No prefix removal
-                                flatten: false              // ✅ Maintain directory structure
-                            ]]
-                        ])
-                    } else {
-                        echo "Skipping deployment for branch ${env.BRANCH_NAME}"
-                    }
+                    echo "Deploying to FTP server..."
+                    step([
+                        $class: 'PublishOverFtp',
+                        parameterName: '',
+                        sites: [[
+                            name: "helpinghands", // ✅ Must match the configured name in Jenkins
+                            sourceFiles: '**/*', // ✅ Upload all files
+                            remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Correct FTP path
+                            removePrefix: '',
+                            flatten: false
+                        ]]
+                    ])
                 }
             }
         }
