@@ -13,7 +13,6 @@ pipeline {
                 // Add build commands (e.g., Maven, Gradle, npm, etc.)
             }
         }
-
         stage('Test') {
             steps {
                 echo 'Running tests...'
