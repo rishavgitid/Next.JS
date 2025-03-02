@@ -38,6 +38,17 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
+                    echo "Checking and Creating FTP directory if missing..."
+
+                    // ✅ Run FTP commands to create the directory before uploading
+                    sh '''
+                    ftp -inv $FTP_SERVER <<EOF
+                    user $FTP_USER $FTP_PASSWORD
+                    mkdir heplingshand.in/htdocs
+                    bye
+                    EOF
+                    '''
+
                     echo "Deploying to FTP server..."
                     ftpPublisher(
                         publishers: [
@@ -46,8 +57,7 @@ pipeline {
                                 transfers: [
                                     [
                                         sourceFiles: '**/*',
-                                        remoteDirectory: '/',  // ✅ Correct FTP path
-                                        removePrefix: 'heplingshand.in', // ✅ Only remove the project folder
+                                        remoteDirectory: '/heplingshand.in/htdocs/',  // ✅ Correct FTP path
                                         flatten: false,
                                         cleanRemote: true // ✅ Overwrite existing files
                                     ]
