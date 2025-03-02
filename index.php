@@ -69,7 +69,7 @@
                 <!-- Navigation links -->
                 <ul id="mobileMenu" class="hidden fixed top-0 left-0 w-64 h-full bg-white shadow-lg z-20 transform -translate-x-full transition-transform duration-300 md:hidden">
                     <li class="p-4 border-b">
-                        <a href="#about" class="block hover:text-indigo-600">About Us no</a>
+                        <a href="#about" class="block hover:text-indigo-600">About Us not</a>
                     </li>
                     <li class="p-4 border-b">
                         <a href="#services" class="block hover:text-indigo-600">Services</a>
