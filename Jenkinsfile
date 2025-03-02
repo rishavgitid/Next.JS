@@ -46,7 +46,7 @@ pipeline {
                                 transfers: [
                                     [
                                         sourceFiles: '**/*',
-                                        remoteDirectory: '/heplingshand.in/htdocs/',  // ✅ Correct FTP path
+                                        remoteDirectory: '/',  // ✅ Correct FTP path
                                         removePrefix: 'heplingshand.in', // ✅ Only remove the project folder
                                         flatten: false,
                                         cleanRemote: true // ✅ Overwrite existing files
