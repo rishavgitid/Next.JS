@@ -46,7 +46,7 @@ pipeline {
                                 transfers: [
                                     [
                                         sourceFiles: '**/*', // ✅ Upload all files
-                                        remoteDirectory: '/', // ✅ Target directory on FTP
+                                        remoteDirectory: '/heplingshand.in/htdocs/', // ✅ Target directory on FTP
                                         removePrefix: '',
                                         flatten: false
                                     ]
